@@ -1,0 +1,14 @@
+<div *ngIf="this.authService.user">
+    <div class="card" style="width: 66rem;">
+        <div class="card-body">
+            <h5 class="card-title">Add User Data</h5>
+            <p>Username - {{authService.user.displayName}}</p>
+            <p>Email - {{authService.user.mail}}</p>
+        </div>
+    </div>
+    
+</div>
+<div>
+    <a  class="btn btn-primary btn-large" role="button" (click)="getWord()">Click here to get Word file</a>
+    <a  class="btn btn-primary btn-large" role="button" (click)="postWord()">Click here to Save to Word file</a>
+</div>

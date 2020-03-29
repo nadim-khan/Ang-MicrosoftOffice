@@ -1,0 +1,18 @@
+<div class="jumbotron">
+  <h1>Angular Graph API an Excel/Word</h1>
+  <div *ngIf="authService.authenticated; then welcomeUser else signInPrompt"></div>
+  <div *ngIf="authService.user">
+    <app-excel></app-excel><br>
+    <app-word></app-word>
+  </div>
+  <!-- <ng-template #welcomeUser>
+    <div *ngIf="authService.user">
+      <h4 >Welcome {{ authService.user.displayName }}!</h4>
+      <app-adds-in></app-adds-in>
+    </div>
+    <p>Use the navigation bar at the top of the page to get started.</p>
+  </ng-template> -->
+  <ng-template #signInPrompt>
+    <a href="javascript:undefined" class="btn btn-primary btn-large" role="button" (click)="signIn()">Click here to sign in</a>
+  </ng-template>
+</div>
