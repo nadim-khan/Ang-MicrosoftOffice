@@ -30,14 +30,17 @@
     "@microsoft/microsoft-graph-types": "^1.12.0",
     "@ng-bootstrap/ng-bootstrap": "^5.1.4",
     "bootstrap": "^4.4.1",
+    "file-saver": "^2.0.2",
     "generator-office": "^1.6.1",
     "hammerjs": "^2.0.8",
     "hellojs": "^1.18.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
+    "ngx-spinner": "^9.0.1",
     "rxjs": "~6.4.0",
     "rxjs-compat": "^6.5.3",
     "tslib": "^1.10.0",
+    "xlsx": "^0.15.6",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

@@ -8,12 +8,16 @@ import { User } from './user';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import * as hello from 'hellojs/dist/hello.all.js';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/fromPromise';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as MicrosoftGraphClient from '@microsoft/microsoft-graph-client';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +28,7 @@ export class AuthService {
   url = 'https://graph.microsoft.com/v1.0';
   file = 'demo.xlsx';
   table = 'Table1';
+  i;
 
   constructor(
     private zone: NgZone,
@@ -33,7 +38,6 @@ export class AuthService {
     private alertsService: AlertsService) {
     this.authenticated = this.msalService.getUser() != null;
     this.getUser().then((user) => { this.user = user; });
-    console.log(msalService.loginPopup());
   }
 
   // Prompt the user to sign in and
@@ -47,7 +51,6 @@ export class AuthService {
     if (result) {
       this.authenticated = true;
       this.user = await this.getUser();
-      console.log(this.user);
     }
   }
 
@@ -59,16 +62,30 @@ export class AuthService {
   }
   getInfoFromExcel() {
     const client = this.getClient();
-    console.log('client ==> ', client);
     const url = `${this.url}/me/drive/root:/${this.file}:/workbook/tables/${this.table}/rows`;
     return Observable.fromPromise(client
     .api(url)
     .get()
     );
   }
+  openOnline() {
+    const client = this.getClient();
+    const url = `${this.url}/me/drive/root`;
+    return Observable.fromPromise(client
+      .api(url)
+      .get()
+      );
+  }
+  deleteRowInExcel(row) {
+    const client = this.getClient();
+    const url = `${this.url}/me/drive/root:/${this.file}:/workbook/tables/${this.table}/rows/itemAt(index=${row})`;
+    return Observable.fromPromise(client
+    .api(url)
+    .delete()
+    );
+  }
 
   addInfoToExcel(user: MicrosoftGraph.User) {
-    console.log('Nad User ==> ', user);
     const userInfo = [];
     userInfo.push([user.id, user.displayName, user.mail, user.jobTitle, user.officeLocation, user.mobilePhone]);
     const userInfoRequestBody = {
@@ -83,6 +100,21 @@ export class AuthService {
     .api(url)
     .post(body)
     );
+  }
+
+  public exportAsExcelFile(json: any[], excelFileName: string): void {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+    console.log('worksheet', worksheet);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data' : worksheet }, SheetNames: ['data'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, excelFileName);
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE
+    });
+    FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
 
   getClient(): MicrosoftGraphClient.Client {
@@ -122,14 +154,12 @@ export class AuthService {
             done(reason, null);
           });
         if (token) {
-          console.log('Token Aquired ==>', token);
           done(null, token);
         } else {
           done('Could not get an access token', null);
         }
       }
     });
-    console.log('graphClient ==> ', graphClient);
 
     // Get the user from Graph (GET /me)
     const graphUser = await graphClient.api('/me').get();

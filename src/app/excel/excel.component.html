@@ -1,4 +1,28 @@
 <div *ngIf="this.authService.user && excelData.length" [ngClass]="excelView">
+    <form [formGroup]="editData" (ngSubmit)="updateForm()">
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" formControlName="id" placeholder="ID">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" formControlName="displayName" placeholder="Username">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" formControlName="mail" placeholder="Email">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" formControlName="address" placeholder="Office Address">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" formControlName="mobile" placeholder="Mobile">
+            </div>
+
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<div *ngIf="this.authService.user && excelData.length" [ngClass]="excelView">
     <table class="table table-dark">
         <tr>
             <th scope="col">S.no</th>
@@ -11,22 +35,20 @@
         </tr>
         <tr *ngFor="let data of excelData; let i=index" >
             <td >{{i+1}}</td>
-            <td><code  (click)="change(i)">{{data[0]}}</code></td>
-            <td><input type="text" value="{{data[2]}}" #box0 (keyup)="0">{{box0.value}}</td>
+            <td><code>{{data[0]}}</code></td>
             <td >{{data[1]}}</td>
-            <td><input type="text" value="{{data[2]}}" #box1 (keyup)="0">{{box1.value}}</td>
-            <td>{{data[2]}}</td>
-            <td><input type="text" value="{{data[2]}}" #box2 (keyup)="0">{{box2.value}}</td>
-            <td>{{data[3]}}</td>
-            <td><input type="text" value="{{data[2]}}" #box3 (keyup)="0">{{box3.value}}</td>
-            <td>{{data[4]}}</td>
-            <td><input type="text" value="{{data[2]}}" #box4 (keyup)="0">{{box4.value}}</td>
-            <td>{{data[5]}}</td>
-            <td><input type="text" value="{{data[2]}}" #box5 (keyup)="0">{{box5.value}}</td>
-            <td><button class="btn btn-primary">Update</button></td>
+            <td >{{data[2]}}</td>
+            <td >{{data[3]}}</td>
+            <td >{{data[4]}}</td>
+            <td >{{data[5]}}</td>
+            <td>
+                <button class="btn btn-primary" *ngIf="!showUpdateBtn"(click)="edit(i)" >Edit</button>
+                <button class="btn btn-danger" *ngIf="!showUpdateBtn"(click)="delete(i)" >Delete</button>
+            </td>
         </tr>
     </table>
 </div>
+
 <div *ngIf="this.authService.user">
     <div class="card" style="width: 66rem;">
         <div class="card-body">
@@ -36,9 +58,14 @@
         </div>
     </div>
 </div>
+<div *ngIf="showIframe">{{excelUrl}}
+    <iframe height="300px" width="60%" src="excelUrl" name="iframe_a"></iframe>
+</div>
 
 
 <div>
-    <a class="btn btn-primary btn-large" role="button" (click)="getExcel()">Click here to get excel</a>
-    <a class="btn btn-primary btn-large" role="button" (click)="postExcel()">Click here to Save to excel</a>
+    <a class="btn btn-primary btn-large" role="button" (click)="getExcel()">Show Excel</a>
+    <a class="btn btn-primary btn-large" role="button" (click)="OpenExcelFileOnline()">Edit Excel</a>
+    <a class="btn btn-primary btn-large" role="button" (click)="postExcel()">Save to Excel</a>
+    <button class="btn btn-primary btn-large" (click)="exportAsXLSX()"><i class="fa fa-file-excel-o" style="color:blue"></i> Download Sheet</button>
 </div>
